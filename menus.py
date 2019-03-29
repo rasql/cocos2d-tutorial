@@ -13,40 +13,28 @@ from cocos.scene import *
 
 class OptionsMenu(Menu):
     def __init__(self):
-        super(OptionsMenu, self).__init__('Options')
+        super(OptionsMenu, self).__init__('Menus')
         
         items = []
-        self.volumes = ['Mute','10','20','30','40','50','60','70','80','90','100']
+        self.values = ['Mute','10','20','30','40','50','60','70','80','90','100']
+        self.colors = [(255, 255, 255), (255, 0, 50), (0, 255, 50), (0, 50, 255)]
 
-        items.append(MultipleMenuItem(
-                        'SFX volume: ', 
-                        self.on_volume,
-                        self.volumes,
-                        5)
-                    )
-        items.append(MultipleMenuItem(
-                        'Music volume: ', 
-                        self.on_volume,
-                        self.volumes,
-                        5)
-                    )
-        items.append(ToggleMenuItem('Show FPS:', self.on_show_fps, director.show_FPS) )
-        items.append(MenuItem('Fullscreen', self.on_fullscreen) )
-        items.append(MenuItem('Back', self.on_quit) )
-        self.create_menu( items, shake(), shake_back() )
+        items.append(MenuItem('Menu', self.cb0))    
+        items.append(MultipleMenuItem('Multiple:', self.cb, self.values, 5))
+        items.append(ToggleMenuItem('Toggle:', self.cb))
+        items.append(EntryMenuItem('Entry:', self.cb, 'abc', 10))
+        items.append(ColorMenuItem('Color:', self.cb, self.colors))
+        items.append(ImageMenuItem('animals/bird-icon.png', self.cb0))
+        
+        self.create_menu( items, zoom_in(), zoom_out() )
 
-    def on_fullscreen(self):
-        director.window.set_fullscreen(not director.window.fullscreen)
+    def cb0(self):
+        """Callback function without callback value."""
+        print('cb')
 
-    def on_quit(self):
-        self.parent.switch_to(0)
-
-    def on_show_fps(self, value):
-        director.show_FPS = value
-
-    def on_volume(self, idx):
-        # called with the index (0 .. 10)
-        pass
+    def cb(self, val):
+        """Callback function with callback value."""
+        print('cb value =', val)
 
 
 class MainMenu(Menu):
