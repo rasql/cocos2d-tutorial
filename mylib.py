@@ -1,18 +1,55 @@
 import cocos
 from cocos.director import director
 from cocos.scene import Scene
-from cocos.layer import ColorLayer
+from cocos.layer import Layer, ColorLayer, ScrollingManager, ScrollableLayer, MultiplexLayer
 from cocos.text import Label
 from cocos.sprite import Sprite
 from cocos.actions import *
 from cocos.scenes.transitions import *
 from pyglet.window import key
 
+keyboard = key.KeyStateHandler()
+
+class Title(cocos.layer.Layer):
+    """This layer displays title in the center."""
+    def __init__(self, title):
+        super(Title, self).__init__()
+        # a cocos.text.Label is a wrapper of pyglet.text.Label
+        # with the benefit of being a cocosnode
+        label = cocos.text.Label(title, font_size=64,
+                                 anchor_x='center', anchor_y='center')
+        w, h = director.get_window_size()
+        label.position = (w//2, h//2)
+        self.add(label)
+
+class SwitchScene(Layer):
+    """This layer allows to switch between different scenes by using the LEFT/RIGHT arrow."""
+    is_event_handler = True
+
+    def __init__(self):
+        super(SwitchScene, self).__init__()
+        self.label = cocos.text.Label('Switch scenes with cmd+LEFT/RIGHT')
+        self.label.position = (10, 10)
+        self.add(self.label)
+        self.scenes = []
+        self.index = 0
+
+    def on_key_press(self, k, mod):
+        """Switch between scenes."""
+        d = {key.LEFT:-1, key.RIGHT:+1}
+        if k in d and mod & key.MOD_COMMAND:
+            self.index += d[k]
+            self.index %= len(self.scenes)
+            scene = self.scenes[self.index]
+            cocos.director.director.replace(scene)
+
 class TitleStatus(cocos.layer.Layer):
     """Define a new layer class to display a title and status line"""
-    def __init__(self):
-        super(TitleStatus, self).__init__()
-        self.title = cocos.text.Label('Title', font_size=24, x=10, y=400)
+    def __init__(self, *args, **kwargs):
+        super(TitleStatus, self).__init__(*args, **kwargs)
+        w, h = director.get_window_size()
+        self.title = cocos.text.Label('Title', font_size=24)
+        self.title.position = (10, h-30)
         self.add(self.title)
         self.status = cocos.text.Label('Status message', position=(10, 10))
         self.add(self.status)
@@ -26,14 +63,19 @@ class ListMenu(cocos.layer.Layer):
     """
     is_event_handler = True
 
-    def __init__(self, items, *args, **kwargs):
+    def __init__(self, items, title=None, *args, **kwargs):
         super(ListMenu, self).__init__(*args, **kwargs)
         self.items = items
         self.labels = []
         self.index = 0
+        w, h = director.get_window_size()
+        if title == None:
+            title = 'List Menu' 
+        self.title = Label(title, font_size=24, bold=True, position=(10, h-30))
+        self.add(self.title)
 
         # Create labels for each item in the list
-        x, y, dy = 10, 50, 20
+        x, y, dy = 10, h-60, -20
         for item in items:
             label = Label(item, position=(x, y))
             y += dy
@@ -44,7 +86,7 @@ class ListMenu(cocos.layer.Layer):
         self.labels[self.index].element.bold = True
     
     def on_key_press(self, k, mod):
-        d = {key.UP:1, key.DOWN:-1}
+        d = {key.UP:-1, key.DOWN:1}
         if k in d:
             self.labels[self.index].element.bold = False
             self.index += d[k]
@@ -55,6 +97,28 @@ class ListMenu(cocos.layer.Layer):
 
     def cb(self, val):
         print(val)
+
+
+class SwitchLayer(MultiplexLayer):
+    """Returns a MultiplexLayer and permits switching with LEFT/RIGHT arrows."""
+    is_event_handler = True
+
+    def __init__(self, *layers):
+        super(SwitchLayer, self).__init__(*layers)
+        self.index = 0
+        self.label = Label('Switch layers with LEFT/RIGHT')
+        self.label.position = (10, 30)
+        self.add(self.label, z=1)
+
+    def on_key_press(self, k, mod):
+        d = {key.LEFT:-1, key.RIGHT:1}
+        if k in d:
+            self.index += d[k]
+            self.index %= len(self.layers)
+            self.switch_to(self.index)
+            layer = self.layers[self.index] 
+            # print(layer.__class__)
+            # print(layer.__doc__)
 
 
 actions = [
@@ -83,7 +147,7 @@ actions = [
 
 class ActionMenu(ListMenu):
     def __init__(self, list, *args, **kwargs):
-        super(ActionMenu, self).__init__(list, *args, *kwargs)
+        super(ActionMenu, self).__init__(list, title='Actions', *args, *kwargs)
         self.sprite = cocos.sprite.Sprite('animals/cat-icon.png')
         self.sprite.position = 320, 240
         self.add(self.sprite)
@@ -109,7 +173,7 @@ effects = [
 
 class EffectMenu(ListMenu):
     def __init__(self, list, *args, **kwargs):
-        super(EffectMenu, self).__init__(list, *args, *kwargs)
+        super(EffectMenu, self).__init__(list, title='Effects', *args, *kwargs)
         self.sprite = cocos.sprite.Sprite('animals/cat-icon.png')
         self.sprite.position = 400, 300
         self.sprite.scale = 2
@@ -151,7 +215,7 @@ transitions = [
 
 class TransitionMenu(ListMenu):
     def __init__(self, list, *args, **kwargs):
-        super(TransitionMenu, self).__init__(list, *args, *kwargs)
+        super(TransitionMenu, self).__init__(list, title='Transitions', *args, *kwargs)
 
         # Define three different sprites
         s0 = Sprite('animals/cow-icon.png', position=(400, 300), scale=2)
@@ -197,14 +261,52 @@ on mouse press, the image position is reset to the mouse position."""
     def on_mouse_press(self, x, y, buttons, modifiers):
         self.img.position = (x, y)
     
+# Imports as usual
+from cocos.tiles import load
+from cocos.layer import ScrollingManager
+from cocos.director import director
+from cocos.scene import Scene
+
+class MyMap(ScrollingManager):
+    def __init__(self, *args, **kwargs):
+        super(ScrollingManager, self).__init__(*args, **kwargs)
+        self.map_layer = load("maps/world.tmx")["tiles"]
+        self.add(self.map_layer)
+
+
+class CarDriver(Driver):
+    def step(self, dt):
+        self.target.rotation += (keyboard[key.RIGHT] - keyboard[key.LEFT]) * 100 * dt
+        self.target.acceleration = (keyboard[key.UP] - keyboard[key.DOWN]) * 350
+        if keyboard[key.SPACE]:
+            self.target.speed = 0
+        super(CarDriver, self).step(dt)
+
+
+
+class CarLayer(ScrollableLayer):
+    def __init__(self, *args, **kwargs):
+        super(CarLayer, self).__init__(*args, **kwargs)
+        self.car = Sprite('img/cars/car.png', position=(200, 100), scale=0.5)
+        self.add(self.car)
+        self.car.do(CarDriver())
+
 
 def main():
     director.init(800, 600, resizable=True)
     bg = cocos.layer.ColorLayer(0, 127, 127, 255)
     
-    #main_scene = cocos.scene.Scene(ActionMenu(actions))
-    main_scene = cocos.scene.Scene(bg, TransitionMenu(transitions))
-    director.run(main_scene)
+    map_layer = load("maps/world.tmx")["tiles"] # cocos.tiles.RectMapLayer
+    car_layer = CarLayer()
+    scroller = ScrollingManager() # cocos.layer.scrolling.ScrollingManager
+    scroller.add(map_layer)
+    scroller.add(car_layer)
+    print(scroller)
+
+    # main_scene = Scene(ActionMenu(actions))
+    main_scene = Scene(TransitionMenu(transitions)) 
+    director.run(Scene(scroller))
+    # director.run(Scene(MyMap()))
 
 if __name__ == '__main__':
     main()

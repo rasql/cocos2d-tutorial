@@ -1,69 +1,48 @@
 """
 Raphael Holzer
 16. 02. 2019
-
-Displaying a window with the text 'Hello World'.
+Cocos2D Tutorial
 """
 
 import cocos
 import pyglet
 from cocos.director import director
 from cocos.scene import Scene
-from cocos.layer import ColorLayer
-from actions import Animal
+from cocos.layer import Layer, ColorLayer, MultiplexLayer, PythonInterpreterLayer
+from cocos.text import Label
+from mylib import Title, SwitchScene, SwitchLayer
 from mylib import Mouse, ActionMenu, EffectMenu, TransitionMenu, actions, effects, transitions
 from menus import OptionsMenu
-
-
-class HelloWorld(cocos.layer.Layer):
-    """This layer displays the words 'Hello world' in the center."""
-    def __init__(self):
-        super(HelloWorld, self).__init__()
-        # a cocos.text.Label is a wrapper of pyglet.text.Label
-        # with the benefit of being a cocosnode
-        label = cocos.text.Label('Cocos2D Tutorial',
-                                 font_name='Times New Roman',
-                                 font_size=64,
-                                 anchor_x='center', anchor_y='center',
-                                 position=(400, 300))
-        self.add(label)
         
-class SwitchScenes(cocos.layer.Layer):
-    """This layer allows to switch between different scenes by using the LEFT/RIGHT arrow."""
-    is_event_handler = True
+class DriveCar(cocos.actions.Driver):
+    def step(self, dt):
+        # handle input and move the car
+        self.target.rotation += (keyboard[key.RIGHT] - keyboard[key.LEFT]) * 150 * dt
+        self.target.acceleration = (keyboard[key.UP] - keyboard[key.DOWN]) * 400
+        if keyboard[key.SPACE]: self.target.speed = 0
+        super(DriveCar, self).step(dt)
+        scroller.set_focus(self.target.x, self.target.y)
 
-    def __init__(self):
-        super(SwitchScenes, self).__init__()
-        self.label = cocos.text.Label('Switch scenes : cmd+LEFT/RIGHT', x=5, y=5)
-        self.add(self.label)
-        self.scenes = []
-        self.index = 0
-
-    def on_key_press(self, key, modifiers):
-        """Switch between scenes."""
-        if key == pyglet.window.key.LEFT and modifiers & pyglet.window.key.MOD_COMMAND:
-            self.index -= 1
-            self.index %= len(self.scenes)
-            scene = self.scenes[self.index]
-            cocos.director.director.replace(scene)
-        if key == pyglet.window.key.RIGHT and modifiers & pyglet.window.key.MOD_COMMAND:
-            self.index += 1
-            self.index %= len(self.scenes)
-            scene = self.scenes[self.index]
-            cocos.director.director.replace(scene)
 
 
 def main():
     # initialize the director
     director.init(800, 600, resizable=True)
-    
+    # create the scene switch layer
+    switch_layer = SwitchScene()    
+
     # define the scene switch layer
-    switch_layer = SwitchScenes()
+
+
+    red = ColorLayer(255, 0, 0, 255)
+    green = ColorLayer(0, 255, 0, 255)
+    blue = ColorLayer(0, 0, 255, 255)
 
     # place all scenes in a scene list
     scenes = [
-        Scene(HelloWorld(), switch_layer),
-        Scene(Animal(), switch_layer),
+        Scene(Title('Cocos2D tutorial'), switch_layer),
+        Scene(SwitchLayer(red, green, blue), switch_layer),
+        Scene(PythonInterpreterLayer(), switch_layer),
         Scene(Mouse(), switch_layer),
         Scene(ColorLayer(150, 0, 0, 255), switch_layer),
         Scene(OptionsMenu(), switch_layer),
