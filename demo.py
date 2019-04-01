@@ -24,7 +24,6 @@ class DriveCar(cocos.actions.Driver):
         scroller.set_focus(self.target.x, self.target.y)
 
 
-
 def main():
     # initialize the director
     director.init(800, 600, resizable=True)
