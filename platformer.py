@@ -112,22 +112,15 @@ class Player(Layer):
     """
     Define a player for a normal Layer. 
     Use the arrow keys to change velocity
-    N : position = (0, 0), velocity = (0, 0)
-    up/down : modify y velocity
-    left/right : modify x velocity
+    - N : position = (0, 0), velocity = (0, 0)
+    - up/down : modify y velocity
+    - left/right : modify x velocity
     """
     is_event_handler = True
 
     def __init__(self, img, driver=None, *args, **kwargs):
         super(Player, self).__init__(*args, **kwargs)
         w, h = director.get_window_size()
-        self.title = cocos.text.Label('My Player', font_size=24, bold=True)
-        self.title.position = (10, h-40)
-        self.add(self.title)
-
-        self.doc = cocos.text.Label(self.__doc__, multiline=True, width=w-20, anchor_y='top')
-        self.doc.position = (10, h-60) 
-        self.add(self.doc)
 
         self.status = cocos.text.Label('Status')
         self.status.position = (10, 50)
@@ -195,26 +188,36 @@ class MyWitchController(cocos.actions.Action):
         self.target.position = new.center
         self.target.parent.parent.set_focus(*new.center)
 
-class MyWitch(ScrollingManager):
-    """Set up the game layers: wall, decoration and player."""
+class MyWitch(Layer):
+    """Simple platformer example with walls, decoration and a player.
+    - Left/right : move the player
+    - Space : jump
+    """
     def __init__(self, *args, **kwargs):
         super(MyWitch, self).__init__(*args, **kwargs)
 
+        # add a background layer
+        self.add(ColorLayer(100, 100, 100, 255))
+
+        scroller = ScrollingManager()
+        
         self.fullmap = cocos.tiles.load('maps/platformer-map.xml')
+
         # add the walls (labyrinth)
         self.walls = self.fullmap['walls']
-        self.add(self.walls, z=0)
+        scroller.add(self.walls, z=0)
 
         # add the items (bushes cauldron)
         self.decoration = self.fullmap['decoration']
-        self.add(self.decoration, z=1)
+        scroller.add(self.decoration, z=1)
 
         # add the player
         player_layer = layer.ScrollableLayer()
         self.player = cocos.sprite.Sprite('img/witch-standing.png')
         self.player.do(MyWitchController())
         player_layer.add(self.player)
-        self.add(player_layer, z=2)
+        scroller.add(player_layer, z=2)
+        self.add(scroller)
 
         # set the player start position using the player_start token from the map
         start = self.decoration.find_cells(player_start=True)[0]
@@ -228,6 +231,14 @@ class MyWitch(ScrollingManager):
             mapcollider, self.walls)
 
 class MyRoad(MyMap):
+    """Car driving on a tiled map.
+    - Left/right : steering
+    - Up/down : accelerate/decelerate
+    - Space : brake
+    - Z/U : zoom
+    - N : normal
+    - D : Display debug info
+    """
     def __init__(self):
         super(MyRoad, self).__init__(cocos.tiles.load('maps/road-map.xml')['map0'])
         self.add(ScrollablePlayer('img/cars/taxi.png'))
@@ -237,14 +248,13 @@ if __name__ == '__main__':
     keyboard = key.KeyStateHandler()
     director.window.push_handlers(keyboard)
 
-    bg = ColorLayer(100, 100, 100, 255)
     # create the scene switch layer
     switch_layer = SwitchScene()    
 
     # place all scenes in a scene list
     scenes = [
         Scene(Title('Platformer demo'), switch_layer),
-        Scene(bg, MyWitch(), switch_layer),
+        Scene(MyWitch(), switch_layer),
         Scene(MyRoad(), switch_layer),
         Scene(Player('img/rocket.png'), switch_layer),
         Scene(MyMap(cocos.tiles.load('maps/world.tmx')['tiles']), switch_layer),
