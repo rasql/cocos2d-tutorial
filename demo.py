@@ -17,6 +17,7 @@ from cocos.actions import *
 from mylib import Title, SwitchScene, SwitchLayer
 from mylib import ActionMenu, EffectMenu, TransitionMenu, actions, effects, transitions
 from menus import OptionsMenu
+from pong import Pong
         
 class DriveCar(cocos.actions.Driver):
     def step(self, dt):
@@ -51,7 +52,7 @@ class AddAction(Layer):
         super(AddAction, self).__init__()
         w, h = director.get_window_size()
         self.sprite = Sprite('animals/dog-icon.png', position=(w//2, h//2))
-        self.sprite.do(Repeat(Rotate(360, 2)))
+        self.sprite.do(Repeat(Rotate(360, 2))|Repeat(ScaleBy(2, 1)+Reverse(ScaleBy(2, 1))))
         self.add(self.sprite)
 
 class Mouse(Layer):
@@ -63,8 +64,9 @@ class Mouse(Layer):
     
     def __init__(self):
         super(Mouse, self).__init__()
-        self.img = Sprite('animals/cat-icon.png')
-        self.img.position = 200, 100
+        self.img = Sprite('animals/mouse-icon.png')
+        w, h = director.get_window_size()
+        self.img.position = w//2, h//2
         self.add(self.img)
 
         self.status = Label('status', position=(10, 30))
@@ -79,6 +81,35 @@ class Mouse(Layer):
 
     def on_mouse_press(self, x, y, buttons, modifiers):
         self.img.position = (x, y)
+
+
+class Cat(cocos.layer.Layer):
+    """Display a sprite sprite which reacts to mouse and key input.
+    - R : rotate by 90 degrees
+    - S : scale by 1.5
+    - N : return back to normal (scale=1)
+    - mouse press : move the sprite to the new position."""
+
+    is_event_handler = True
+    
+    def __init__(self):
+        super(Cat, self).__init__()
+        
+        self.cat = cocos.sprite.Sprite('animals/cat-icon.png')
+        self.cat.position = 200, 200
+        self.add(self.cat, z=1)
+    
+    def on_mouse_press(self, x, y, buttons, modifiers):
+        self.cat.position = director.get_virtual_coordinates(x, y)
+        
+    def on_key_press(self, key, modifiers):
+        if key == pyglet.window.key.R:
+            self.cat.do(Rotate(90, 1))
+        elif key == pyglet.window.key.S:
+            self.cat.do(ScaleBy(1.5, 1))
+        elif key == pyglet.window.key.N:
+            self.cat.scale = 1
+
 
 def main():
     # initialize the director
@@ -105,9 +136,11 @@ def main():
         Scene(HelloWorld(), switch_layer),
         Scene(AddActor(), switch_layer),
         Scene(AddAction(), switch_layer),
+        Scene(Mouse(), switch_layer),
+        Scene(Cat(), switch_layer),     
+        Scene(Pong(), switch_layer),     
         Scene(SwitchLayer(red, green, blue), switch_layer),
         Scene(PythonInterpreterLayer(), switch_layer),
-        Scene(Mouse(), switch_layer),
         Scene(ColorLayer(150, 0, 0, 255), switch_layer),
         Scene(OptionsMenu(), switch_layer),
         Scene(ColorLayer(0, 150, 0, 255), switch_layer),
