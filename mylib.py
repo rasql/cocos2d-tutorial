@@ -28,6 +28,15 @@ class SwitchScene(Layer):
 
     def __init__(self):
         super(SwitchScene, self).__init__()
+        w, h = director.get_window_size()
+        d = 10
+        self.title = Label('Class', font_size=24, position=(d, h-d), anchor_y='top')
+        self.add(self.title)
+
+        self.doc = Label('Doc string', position=(d, h-50), anchor_y='top', 
+            multiline=True, width=w-20 )
+        self.add(self.doc)
+        
         self.label = cocos.text.Label('Switch scenes with cmd+LEFT/RIGHT')
         self.label.position = (10, 10)
         self.add(self.label)
@@ -42,6 +51,12 @@ class SwitchScene(Layer):
             self.index %= len(self.scenes)
             scene = self.scenes[self.index]
             cocos.director.director.replace(scene)
+            children = scene.get_children()
+            class_name = children[0].__class__.__name__
+            doc = children[0].__doc__ 
+            self.title.element.text = class_name
+            self.doc.element.text = doc
+
 
 class TitleStatus(cocos.layer.Layer):
     """Define a new layer class to display a title and status line"""
@@ -237,29 +252,6 @@ class TransitionMenu(ListMenu):
         transition = eval(val)
         director.replace(transition(scene, 1.25))
 
-
-class Mouse(TitleStatus):
-    """This class displays the mouse coordinates in the status line,
-on mouse press, the image position is reset to the mouse position."""
-    is_event_handler = True     #: enable pyglet's events
-    
-    def __init__(self):
-        super(Mouse, self).__init__()
-        self.title.element.text = 'Mouse'
-        self.body.element.text = self.__doc__
-        self.img = cocos.sprite.Sprite('animals/cat-icon.png')
-        self.img.position = 200, 100
-        self.add(self.img)
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        self.status.element.text = 'mouse motion pos=({}, {}), vec=({}, {})'.format(x, y, dx, dy)
-
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.status.element.text = 'mouse drag pos=({}, {}), vec=({}, {}), but={}'.format(x, y, dx, dy, buttons)
-        self.img.position = (x, y)
-
-    def on_mouse_press(self, x, y, buttons, modifiers):
-        self.img.position = (x, y)
     
 # Imports as usual
 from cocos.tiles import load
