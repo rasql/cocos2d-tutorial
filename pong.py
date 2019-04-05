@@ -1,8 +1,8 @@
 import cocos
-from cocos.director import director
-
 import pyglet
+from cocos.director import director
 from pyglet.window import key
+
 
 def center():
     w, h = director.get_window_size()

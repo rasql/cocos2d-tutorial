@@ -56,3 +56,15 @@ Install Cocos2D for the user only
     pip install --user cocos2d
 
 Run platformer.py
+
+To do
+=====
+
+- Object attribute editor (Sprite, Layer, etc.)
+- Particle systems demo
+- Breaking Flappy Bird into parts (bird, walls, score)
+- Add OpenGL primitives (Lines, Recangle)
+- Save screenshots
+- Add screenshots to the documentation
+- Place the documentation on ReadTheDocs
+- Add board games (memory, nurikabe, snake)

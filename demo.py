@@ -1,26 +1,26 @@
-"""
-Raphael Holzer
-16. 02. 2019
-Cocos2D Tutorial
-"""
-
 import cocos
 import pyglet
-
-from cocos.director import director
-from cocos.scene import Scene
-from cocos.layer import Layer, ColorLayer, MultiplexLayer, PythonInterpreterLayer
-from cocos.text import Label
-from cocos.sprite import Sprite
 from cocos.actions import *
+from cocos.director import director
+from cocos.layer import (ColorLayer, Layer, MultiplexLayer,
+                         PythonInterpreterLayer)
+from cocos.scene import Scene
+from cocos.sprite import Sprite
+from cocos.text import Label
+from pyglet.window import key
 
-from mylib import Title, SwitchScene, SwitchLayer
-from mylib import ActionMenu, EffectMenu, TransitionMenu, actions, effects, transitions
+from flappybird.flappybird import Flappy, BirdLayer, WallLayer
 from menus import OptionsMenu
+from mylib import (ActionMenu, EffectMenu, SwitchLayer, SwitchScene, Title,
+                   TransitionMenu, actions, effects, transitions)
 from pong import Pong
-        
+
+pyglet.resource.path = ['', 'flappybird/images']
+pyglet.resource.reindex()
+
 class DriveCar(cocos.actions.Driver):
     def step(self, dt):
+        global keyboard
         # handle input and move the car
         self.target.rotation += (keyboard[key.RIGHT] - keyboard[key.LEFT]) * 150 * dt
         self.target.acceleration = (keyboard[key.UP] - keyboard[key.DOWN]) * 400
@@ -137,8 +137,11 @@ def main():
         Scene(AddActor(), switch_layer),
         Scene(AddAction(), switch_layer),
         Scene(Mouse(), switch_layer),
-        Scene(Cat(), switch_layer),     
-        Scene(Pong(), switch_layer),     
+        Scene(Cat(), switch_layer),
+        Scene(Pong(), switch_layer), 
+        Scene(Flappy(), switch_layer),
+        Scene(BirdLayer(), switch_layer),
+        Scene(WallLayer(), switch_layer),
         Scene(SwitchLayer(red, green, blue), switch_layer),
         Scene(PythonInterpreterLayer(), switch_layer),
         Scene(ColorLayer(150, 0, 0, 255), switch_layer),
