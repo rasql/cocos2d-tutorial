@@ -33,7 +33,7 @@ Particle systems are used to create special effects such as fire or smoke.
 Inspector
 ---------
 
-.. automodule:: inspector
+.. automodule:: lib.inspector
    :members:
    :undoc-members:
    :member-order: 'bysource'
