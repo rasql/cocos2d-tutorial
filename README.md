@@ -1,9 +1,11 @@
 # Cocos2d Tutorial
+
 Developing games with cocos2d
 
 Cocos2D is a game development platform.
 
 It uses a hierachy of classes
+
 * __Director__ - there is only one director. The director is running scenes
 * __Scene__ - there can be multiple scenes, but at any one time only one scene is running
 * __Layers__ - a scene can be composed of multiple layers
@@ -28,8 +30,7 @@ This is the code to make this basic application which displays 'Hello World' ins
     scene = cocos.scene.Scene(label)
     cocos.director.director.run(scene)
 
-Built-in commands
------------------
+## Built-in commands
 
 * cmd+I opens the interpreter shell
 * cmd+S takes a screen capture
@@ -38,11 +39,9 @@ Built-in commands
 * cmd+X toggle FPS display
 * cmd+W toggle wire-frame
 
-The built-in interpreter
-------------------------
+## The built-in interpreter
 
 ![interpreter]('screenshot-1554228960.png')
-
 
 ## Installing Python modules within the Anaconda environment
 
@@ -57,14 +56,13 @@ Install Cocos2D for the user only
 
 Run platformer.py
 
-To do
-=====
+## To do
 
-- Object attribute editor (Sprite, Layer, etc.)
-- Particle systems demo
-- Breaking Flappy Bird into parts (bird, walls, score)
-- Add OpenGL primitives (Lines, Recangle)
-- Save screenshots
-- Add screenshots to the documentation
-- Place the documentation on ReadTheDocs
-- Add board games (memory, nurikabe, snake)
+* Object attribute editor (Sprite, Layer, etc.)
+* Particle systems demo
+* Breaking Flappy Bird into parts (bird, walls, score)
+* Add OpenGL primitives (Lines, Recangle)
+* Save screenshots
+* Add screenshots to the documentation
+* Place the documentation on ReadTheDocs
+* Add board games (memory, nurikabe, snake)
