@@ -11,7 +11,7 @@ The ListMenu class allows to display a menu of list items.
 
 .. image:: img/listmenu.png
 
-.. automodule:: lib.listmenu
+.. automodule:: listmenu
 
 .. autoclass:: ListMenu
    :members: cb, on_key_press
@@ -33,7 +33,7 @@ Particle systems are used to create special effects such as fire or smoke.
 Inspector
 ---------
 
-.. automodule:: lib.inspector
+.. automodule:: inspector
    :members:
    :undoc-members:
    :member-order: 'bysource'
