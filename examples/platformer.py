@@ -10,7 +10,7 @@ from cocos.scene import Scene
 from cocos.sprite import Sprite
 from cocos.actions import * # Driver, ScaleTo, Move, WrappedMove, BoundedMove
 from cocos.actions import RandomDelay
-from mylib import Title, SwitchScene, SwitchLayer
+from lib.mylib import Title, SwitchScene, SwitchLayer
 
 
 class DriveCar(Driver):

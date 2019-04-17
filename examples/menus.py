@@ -11,6 +11,10 @@ from cocos.layer import *
 from cocos.menu import *
 from cocos.scene import *
 
+import pyglet
+pyglet.resource.path = ['../animals']
+pyglet.resource.reindex()
+
 class OptionsMenu(Menu):
     def __init__(self):
         super(OptionsMenu, self).__init__('Menus')
@@ -24,7 +28,7 @@ class OptionsMenu(Menu):
         items.append(ToggleMenuItem('Toggle:', self.cb))
         items.append(EntryMenuItem('Entry:', self.cb, 'abc', 10))
         items.append(ColorMenuItem('Color:', self.cb, self.colors))
-        items.append(ImageMenuItem('animals/bird-icon.png', self.cb0))
+        items.append(ImageMenuItem('bird-icon.png', self.cb0))
         
         self.create_menu( items, zoom_in(), zoom_out() )
 

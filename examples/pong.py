@@ -37,7 +37,7 @@ class Pong(cocos.layer.Layer):
         self.label = cocos.text.Label('0', font_size=36, position=(100, h-100))
         self.add(self.label)
 
-        self.sound = pyglet.resource.media('bullet.wav', streaming=False)
+        self.sound = pyglet.resource.media('sounds/bullet.wav', streaming=False)
 
         w, h = director.get_window_size()
         ball = cocos.sprite.Sprite('img/baseball.png', scale=0.2)

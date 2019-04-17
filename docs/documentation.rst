@@ -40,6 +40,5 @@ External hyperlinks, like Cocos2D_.
 .. _Cocos2D: http://python.cocos2d.org/doc/programming_guide/index.html
 
 
-
-.. image:: ../screenshot-1554464788.png
+.. image:: img/flappy.png
 

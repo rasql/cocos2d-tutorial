@@ -11,11 +11,14 @@ from pyglet.window import key
 
 from flappybird.flappybird import Flappy, BirdLayer, WallLayer
 from menus import OptionsMenu
-from mylib import (ActionMenu, EffectMenu, SwitchLayer, SwitchScene, Title,
-                   TransitionMenu, actions, effects, transitions)
+from lib.mylib import (ActionMenu, EffectMenu, SwitchLayer, SwitchScene, Title, actions, effects)
 from pong import Pong
 
-pyglet.resource.path = ['', 'flappybird/images']
+import pyglet
+from pyglet.window import key
+from lib.listmenu import ListMenu
+
+pyglet.resource.path = ['', 'flappybird/images', '../animals']
 pyglet.resource.reindex()
 
 class DriveCar(cocos.actions.Driver):
@@ -43,7 +46,7 @@ class AddActor(Layer):
     def __init__(self):
         super(AddActor, self).__init__()
         w, h = director.get_window_size()
-        self.sprite = Sprite('animals/dog-icon.png', position=(w//2, h//2))
+        self.sprite = Sprite('dog-icon.png', position=(w//2, h//2))
         self.add(self.sprite)
 
 class AddAction(Layer):
@@ -51,7 +54,7 @@ class AddAction(Layer):
     def __init__(self):
         super(AddAction, self).__init__()
         w, h = director.get_window_size()
-        self.sprite = Sprite('animals/dog-icon.png', position=(w//2, h//2))
+        self.sprite = Sprite('dog-icon.png', position=(w//2, h//2))
         self.sprite.do(Repeat(Rotate(360, 2))|Repeat(ScaleBy(2, 1)+Reverse(ScaleBy(2, 1))))
         self.add(self.sprite)
 
@@ -64,7 +67,7 @@ class Mouse(Layer):
     
     def __init__(self):
         super(Mouse, self).__init__()
-        self.img = Sprite('animals/mouse-icon.png')
+        self.img = Sprite('mouse-icon.png')
         w, h = director.get_window_size()
         self.img.position = w//2, h//2
         self.add(self.img)
@@ -95,7 +98,7 @@ class Cat(cocos.layer.Layer):
     def __init__(self):
         super(Cat, self).__init__()
         
-        self.cat = cocos.sprite.Sprite('animals/cat-icon.png')
+        self.cat = cocos.sprite.Sprite('cat-icon.png')
         self.cat.position = 200, 200
         self.add(self.cat, z=1)
     
@@ -149,7 +152,6 @@ def main():
         Scene(ColorLayer(0, 150, 0, 255), switch_layer),
         Scene(ActionMenu(actions), switch_layer),
         Scene(EffectMenu(effects), switch_layer),
-        Scene(TransitionMenu(transitions), switch_layer)
         ]
 
     # give the scene list to the switch layer
